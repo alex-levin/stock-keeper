@@ -1,0 +1,22 @@
+.chart {
+  background: #0e3040;
+  color: #67809f;
+}
+
+.chart-container {
+  background: #0e3040;
+  width: 90%;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.chart-item {
+  color: white;
+  text-align: center;
+  padding: 1em;
+}
+
+a {
+  color: #67809f;
+}
