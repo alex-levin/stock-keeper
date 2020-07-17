@@ -6,7 +6,7 @@ import './StockChart.css';
 // Function component. No more constructors, setState, componentDidMount, etc.
 const StockChart = (props) => {
     const chartRef = useRef(null);
-    alert(props.location.state.symbol);
+    // alert(props.location.state.symbol);
     // componentDidMount replacement
     // https://reactjs.org/docs/hooks-reference.html
     useEffect(() => {

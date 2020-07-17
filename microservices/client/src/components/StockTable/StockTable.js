@@ -10,6 +10,10 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { Redirect } from 'react-router';
 
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+
 const columns = [
     { id: 'symbol', label: 'Symbol', minWidth: 170 },
     { id: 'open', label: 'Open', minWidth: 100 },
@@ -40,6 +44,39 @@ const columns = [
         minWidth: 170,
         align: 'right',
         format: (value) => value.toFixed(2)
+    }
+];
+
+const columnDefs = [
+    {
+        headerName: 'Symbol',
+        resizable: true,
+        field: 'symbol'
+    },
+    {
+        headerName: 'Open',
+        resizable: true,
+        field: 'open'
+    },
+    {
+        headerName: 'High',
+        resizable: true,
+        field: 'high'
+    },
+    {
+        headerName: 'Low',
+        resizable: true,
+        field: 'low'
+    },
+    {
+        headerName: 'Close',
+        resizable: true,
+        field: 'close'
+    },
+    {
+        headerName: 'Volume',
+        resizable: true,
+        field: 'volume'
     }
 ];
 
@@ -91,9 +128,31 @@ export default function StickyHeadTable() {
         this.setState({ redirect: true });
     };
 
+    const onGridReady = (params) => {
+        gridApi = params.api;
+        // this.gridColumnApi = params.columnApi;
+
+        // const httpRequest = new XMLHttpRequest();
+        // const updateData = (data) => {
+        //     this.setState({ rowData: data });
+        // };
+    };
+
+    let gridApi = {};
+
+    const onSelectionChanged = () => {
+        var selectedRows = gridApi.getSelectedRows();
+        // document.querySelector('#selectedRows').innerHTML =
+        //     selectedRows.length === 1 ? selectedRows[0].athlete : '';
+        console.log(selectedRows[0]);
+        setSelectedSymbol(selectedRows[0].symbol);
+        setRedirect(true);
+    };
+
     if (!redirect) {
         return (
             <Paper className={classes.root}>
+                {/*
                 <TableContainer className={classes.container}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
@@ -161,6 +220,24 @@ export default function StickyHeadTable() {
                     onChangePage={handleChangePage}
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
+                
+                */}
+
+                <div
+                    className="ag-theme-alpine"
+                    style={{
+                        height: '400px',
+                        width: '100%'
+                    }}
+                >
+                    <AgGridReact
+                        onGridReady={onGridReady}
+                        rowSelection="single"
+                        columnDefs={columnDefs}
+                        onSelectionChanged={onSelectionChanged}
+                        rowData={rows}
+                    ></AgGridReact>
+                </div>
             </Paper>
         );
     } else {
