@@ -115,7 +115,7 @@ const rows = [
 const useStyles = makeStyles({
     root: {
         width: '80vw',
-        height: '70vh',
+        height: '75vh',
         marginTop: 50,
         margin: 'auto',
         marginBottom: 50
