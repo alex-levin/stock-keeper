@@ -52,32 +52,34 @@ const defaultColDef = {
     resizable: true
 };
 
-const columnDefs = [
-    {
-        headerName: 'Symbol',
-        field: 'symbol'
-    },
-    {
-        headerName: 'Open',
-        field: 'open'
-    },
-    {
-        headerName: 'High',
-        field: 'high'
-    },
-    {
-        headerName: 'Low',
-        field: 'low'
-    },
-    {
-        headerName: 'Close',
-        field: 'close'
-    },
-    {
-        headerName: 'Volume',
-        field: 'volume'
-    }
-];
+const gridOptions = {
+    columnDefs: [
+        {
+            headerName: 'Symbol',
+            field: 'symbol'
+        },
+        {
+            headerName: 'Open',
+            field: 'open'
+        },
+        {
+            headerName: 'High',
+            field: 'high'
+        },
+        {
+            headerName: 'Low',
+            field: 'low'
+        },
+        {
+            headerName: 'Close',
+            field: 'close'
+        },
+        {
+            headerName: 'Volume',
+            field: 'volume'
+        }
+    ]
+};
 
 function createData(symbol, open, high, low, close, volume) {
     return { symbol, open, high, low, close, volume };
@@ -112,7 +114,7 @@ const rows = [
 
 const useStyles = makeStyles({
     root: {
-        width: '90vw',
+        width: '80vw',
         height: '70vh',
         marginTop: 50,
         margin: 'auto',
@@ -177,7 +179,7 @@ export default function StockTable() {
                         defaultColDef={defaultColDef}
                         onGridReady={onGridReady}
                         rowSelection="single"
-                        columnDefs={columnDefs}
+                        gridOptions={gridOptions}
                         onSelectionChanged={onSelectionChanged}
                         rowData={rows}
                     ></AgGridReact>
