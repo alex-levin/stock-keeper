@@ -1,81 +1,94 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { Redirect } from 'react-router';
+import { Slider } from './Slider';
+import './styles.css';
 
-const columns = [
-    { id: 'symbol', label: 'Symbol', minWidth: 170 },
-    { id: 'open', label: 'Open', minWidth: 170 },
+function descendingComparator(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+        return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+        return 1;
+    }
+    return 0;
+}
+
+function getComparator(order, orderBy) {
+    return order === 'desc'
+        ? (a, b) => descendingComparator(a, b, orderBy)
+        : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort(array, comparator) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+        const order = comparator(a[0], b[0]);
+        if (order !== 0) return order;
+        return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+}
+
+const headCells = [
+    {
+        id: 'symbol',
+        label: 'Symbol',
+        numeric: false,
+        disablePadding: false,
+        align: 'left'
+    },
+    {
+        id: 'open',
+        label: 'Open',
+        numeric: true,
+        disablePadding: false,
+        align: 'right',
+        format: (value) => value.toFixed(2)
+    },
     {
         id: 'high',
         label: 'High',
-        minWidth: 170,
+        numeric: true,
+        disablePadding: false,
         align: 'right',
         format: (value) => value.toFixed(2)
     },
     {
         id: 'low',
         label: 'Low',
-        minWidth: 170,
+        numeric: true,
+        disablePadding: false,
         align: 'right',
         format: (value) => value.toFixed(2)
     },
     {
         id: 'close',
         label: 'Close',
-        minWidth: 170,
+        numeric: true,
+        disablePadding: false,
         align: 'right',
         format: (value) => value.toFixed(2)
     },
     {
         id: 'volume',
         label: 'Volume',
-        minWidth: 170,
+        numeric: true,
+        disablePadding: false,
         align: 'right',
         format: (value) => value.toFixed(2)
     }
 ];
-
-const defaultColDef = {
-    sortable: true,
-    resizable: true
-};
-
-const gridOptions = {
-    columnDefs: [
-        {
-            headerName: 'Symbol',
-            field: 'symbol'
-        },
-        {
-            headerName: 'Open',
-            field: 'open'
-        },
-        {
-            headerName: 'High',
-            field: 'high'
-        },
-        {
-            headerName: 'Low',
-            field: 'low'
-        },
-        {
-            headerName: 'Close',
-            field: 'close'
-        },
-        {
-            headerName: 'Volume',
-            field: 'volume'
-        }
-    ]
-};
 
 function createData(symbol, open, high, low, close, volume) {
     return { symbol, open, high, low, close, volume };
@@ -108,6 +121,43 @@ const rows = [
     createData('KO', 2999.69, 2998.79, 2997.04, 2998.58, 4123456)
 ];
 
+function EnhancedTableHead(props) {
+    const { classes, order, orderBy, onRequestSort } = props;
+    const createSortHandler = (property) => (event) => {
+        onRequestSort(event, property);
+    };
+
+    return (
+        <TableHead>
+            <TableRow>
+                {headCells.map((headCell) => (
+                    <TableCell
+                        key={headCell.id}
+                        align={headCell.numeric ? 'right' : 'left'}
+                        padding={headCell.disablePadding ? 'none' : 'default'}
+                        sortDirection={orderBy === headCell.id ? order : false}
+                    >
+                        <TableSortLabel
+                            active={orderBy === headCell.id}
+                            direction={orderBy === headCell.id ? order : 'asc'}
+                            onClick={createSortHandler(headCell.id)}
+                        >
+                            {headCell.label}
+                        </TableSortLabel>
+                    </TableCell>
+                ))}
+            </TableRow>
+        </TableHead>
+    );
+}
+
+EnhancedTableHead.propTypes = {
+    classes: PropTypes.object.isRequired,
+    onRequestSort: PropTypes.func.isRequired,
+    order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+    orderBy: PropTypes.string.isRequired
+};
+
 const useStyles = makeStyles({
     root: {
         width: '80vw',
@@ -121,9 +171,17 @@ const useStyles = makeStyles({
     }
 });
 
-export default function StockTable() {
+export default function StockTableMaterialUIResizeCols() {
+    const [order, setOrder] = React.useState('asc');
+    const [orderBy, setOrderBy] = React.useState('symbol');
     const [redirect, setRedirect] = useState(false);
     const [selectedSymbol, setSelectedSymbol] = useState(null);
+
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
 
     const classes = useStyles();
     const [page, setPage] = React.useState(0);
@@ -144,16 +202,6 @@ export default function StockTable() {
         this.setState({ redirect: true });
     };
 
-    const onGridReady = (params) => {
-        gridApi = params.api;
-        // this.gridColumnApi = params.columnApi;
-
-        // const httpRequest = new XMLHttpRequest();
-        // const updateData = (data) => {
-        //     this.setState({ rowData: data });
-        // };
-    };
-
     let gridApi = {};
 
     const onSelectionChanged = () => {
@@ -169,41 +217,29 @@ export default function StockTable() {
         return (
             <Paper className={classes.root}>
                 <TableContainer className={classes.container}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                {columns.map((column) => (
-                                    <TableCell
-                                        key={column.id}
-                                        align={column.align}
-                                        style={{
-                                            minWidth: column.minWidth
-                                        }}
-                                    >
-                                        {column.label}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
+                    <Table>
+                        <EnhancedTableHead
+                            classes={classes}
+                            order={order}
+                            orderBy={orderBy}
+                            onRequestSort={handleRequestSort}
+                        />
                         <TableBody>
-                            {rows
+                            {stableSort(rows, getComparator(order, orderBy))
                                 .slice(
                                     page * rowsPerPage,
                                     page * rowsPerPage + rowsPerPage
                                 )
-                                .map((row) => {
+                                .map((row, index) => {
                                     return (
                                         <TableRow
-                                            hover
-                                            role="checkbox"
-                                            tabIndex={-1}
                                             key={row.symbol}
                                             onClick={() => {
                                                 setSelectedSymbol(row.symbol);
                                                 setRedirect(true);
                                             }}
                                         >
-                                            {columns.map((column) => {
+                                            {headCells.map((column) => {
                                                 const value = row[column.id];
                                                 return (
                                                     <TableCell

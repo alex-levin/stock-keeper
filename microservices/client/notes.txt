@@ -1,0 +1,5 @@
+https://community.devexpress.com/blogs/oliver/archive/2018/04/20/devextreme-new-react-wrappers-vs-native-react-components.aspx
+https://github.com/DevExpress/devextreme-reactive/blob/master/README.md
+https://devexpress.github.io/devextreme-reactive/react/grid/docs/guides/getting-started/
+npm i --save @devexpress/dx-react-core @devexpress/dx-react-grid
+npm i --save @devexpress/dx-react-grid-material-ui

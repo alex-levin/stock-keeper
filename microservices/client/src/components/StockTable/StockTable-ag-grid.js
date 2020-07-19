@@ -10,6 +10,10 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { Redirect } from 'react-router';
 
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+
 const columns = [
     { id: 'symbol', label: 'Symbol', minWidth: 170 },
     { id: 'open', label: 'Open', minWidth: 170 },
@@ -167,75 +171,20 @@ export default function StockTable() {
 
     if (!redirect) {
         return (
-            <Paper className={classes.root}>
-                <TableContainer className={classes.container}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                {columns.map((column) => (
-                                    <TableCell
-                                        key={column.id}
-                                        align={column.align}
-                                        style={{
-                                            minWidth: column.minWidth
-                                        }}
-                                    >
-                                        {column.label}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {rows
-                                .slice(
-                                    page * rowsPerPage,
-                                    page * rowsPerPage + rowsPerPage
-                                )
-                                .map((row) => {
-                                    return (
-                                        <TableRow
-                                            hover
-                                            role="checkbox"
-                                            tabIndex={-1}
-                                            key={row.symbol}
-                                            onClick={() => {
-                                                setSelectedSymbol(row.symbol);
-                                                setRedirect(true);
-                                            }}
-                                        >
-                                            {columns.map((column) => {
-                                                const value = row[column.id];
-                                                return (
-                                                    <TableCell
-                                                        key={column.id}
-                                                        align={column.align}
-                                                    >
-                                                        {column.format &&
-                                                        typeof value ===
-                                                            'number'
-                                                            ? column.format(
-                                                                  value
-                                                              )
-                                                            : value}
-                                                    </TableCell>
-                                                );
-                                            })}
-                                        </TableRow>
-                                    );
-                                })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
-            </Paper>
+            <div className="ag-theme-alpine">
+                <div className={classes.root}>
+                    <AgGridReact
+                        pagination={true}
+                        paginationPageSize={10}
+                        defaultColDef={defaultColDef}
+                        onGridReady={onGridReady}
+                        rowSelection="single"
+                        gridOptions={gridOptions}
+                        onSelectionChanged={onSelectionChanged}
+                        rowData={rows}
+                    ></AgGridReact>
+                </div>
+            </div>
         );
     } else {
         return (

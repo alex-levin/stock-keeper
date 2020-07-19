@@ -1,0 +1,38 @@
+.MuiTableCell-root {
+    padding: 5px !important;
+  }
+  
+  .data-table-container {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .data-table-header-content-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+  }
+  
+  .data-table-header-cell {
+    white-space: nowrap;
+    /* padding: 0; */
+  }
+  
+  .data-table-header-content,
+  .data-table-header-resizer {
+    display: inline-block;
+  }
+  
+  .data-table-header-content {
+    width: 90%;
+  }
+  
+  .data-table-header-resizer {
+    text-align: right;
+    display: inline-block;
+    width: 10%;
+  }
+  
